@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= pageTitle %></title> <%# Le titre est passé par la route GET /meetings/new %>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    </head>
+<body>
+    <div class="container mt-4 mb-5"> <%# Container Bootstrap pour centrer et marges %>
+
+        <h1><%= pageTitle %></h1>
+        <p>Entrez les détails de la réunion et proposez un ou plusieurs créneaux horaires.</p>
+
+        <%# Zone pour afficher les messages d'erreur (sera remplie par la route POST en cas d'échec) %>
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= error %>
+            </div>
+        <% } %>
+
+        <%# Le formulaire pointe vers la route POST /meetings %>
+        <form method="POST" action="/meetings">
+
+            <%# Champ Titre %>
+            <div class="mb-3">
+                <label for="meeting-title" class="form-label">Titre de la réunion *</label>
+                <input type="text" class="form-control" id="meeting-title" name="title" required
+                       value="<%= (typeof formData !== 'undefined' && formData.title) ? formData.title : '' %>">
+            </div>
+
+            <%# Champ Description %>
+            <div class="mb-3">
+                <label for="meeting-description" class="form-label">Description (optionnel)</label>
+                <textarea class="form-control" id="meeting-description" name="description" rows="3"><%= (typeof formData !== 'undefined' && formData.description) ? formData.description : '' %></textarea>
+            </div>
+
+            <hr>
+
+            <%# Section pour les créneaux horaires %>
+            <h4>Créneaux horaires proposés *</h4>
+            <p><small>Proposez au moins un créneau. Les participants indiqueront leurs disponibilités.</small></p>
+
+            <%# Conteneur où les créneaux seront ajoutés/supprimés %>
+            <div id="slots-container">
+
+                <%# Gère le cas où on ré-affiche le formulaire après une erreur avec des données déjà saisies %>
+                <% if (typeof formData !== 'undefined' && formData.startTimes && formData.startTimes.length > 0) { %>
+                    <% for(let i = 0; i < formData.startTimes.length; i++) { %>
+                        <div class="slot-group mb-2 border p-2 rounded bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <label class="form-label fw-bold mb-0">Créneau <%= i + 1 %>:</label>
+                                <div class="slot-validation-message mt-1"></div>
+                                <%# Affiche le bouton supprimer seulement s'il y a plus d'un créneau %>
+                                <% if (formData.startTimes.length > 1) { %>
+                                    <button type="button" class="btn btn-danger btn-sm remove-slot-btn">X</button>
+                                <% } %>
+                            </div>
+                            <div class="d-flex align-items-center flex-wrap">
+                                <input type="datetime-local" name="startTimes[]" required class="form-control me-2 mb-1" style="width: auto;" value="<%= formData.startTimes[i] || '' %>">
+                                <span class="me-2 mb-1"> à </span>
+                                <input type="datetime-local" name="endTimes[]" required class="form-control me-2 mb-1" style="width: auto;" value="<%= formData.endTimes[i] || '' %>">
+                            </div>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                     <%# Sinon, affiche un premier créneau vide par défaut %>
+                     <div class="slot-group mb-2 border p-2 rounded bg-light">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                             <label class="form-label fw-bold mb-0">Créneau 1:</label>
+                             <div class="slot-validation-message mt-1"></div>
+                             <%# Pas de bouton supprimer pour le tout premier créneau %>
+                        </div>
+                         <div class="d-flex align-items-center flex-wrap">
+                             <input type="datetime-local" name="startTimes[]" required class="form-control me-2 mb-1" style="width: auto;">
+                             <span class="me-2 mb-1"> à </span>
+                             <input type="datetime-local" name="endTimes[]" required class="form-control me-2 mb-1" style="width: auto;">
+                         </div>
+                     </div>
+                <% } %>
+
+            </div><%# Fin de slots-container %>
+
+            <%# Bouton pour ajouter dynamiquement un créneau (ne soumet pas le formulaire) %>
+            <button type="button" id="add-slot-btn" class="btn btn-secondary btn-sm mt-2 mb-3">
+                + Ajouter un créneau
+            </button>
+
+            <hr>
+
+            <%# Bouton pour soumettre le formulaire complet %>
+            <button type="submit" class="btn btn-primary">Créer la réunion</button>
+            <a href="/" class="btn btn-link">Annuler</a> <%# Optionnel %>
+
+        </form> <%# Fin du formulaire %>
+
+    </div> <%# Fin du container %>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="/js/main.js"></script> <%# Assurez-vous que ce chemin est correct %>
+
+</body>
+</html>
