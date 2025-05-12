@@ -5,12 +5,11 @@ const { Pool } = require('pg');
 
 // La configuration dotenv est normalement déjà faite dans app.js au démarrage.
 
-
 // Crée une nouvelle instance de Pool.
 // Le constructeur Pool prend un objet de configuration.
 // Il va automatiquement chercher les variables d'environnement standard
 // (PGUSER, PGHOST, PGDATABASE, PGPASSWORD, PGPORT) si elles existent,
-// mais il est plus explicite de les mapper depuis vos noms de variables .env.
+// mais il est mieux de mapper depuis vos noms de variables .env
 const pool = new Pool({
     user: process.env.DB_USER,          // Nom d'utilisateur de la BDD (dans .env)
     host: process.env.DB_HOST,          // Adresse du serveur BDD (dans .env, souvent 'localhost')
@@ -25,12 +24,12 @@ pool.connect((err, client, release) => {
     if (err) {
         // Si une erreur se produit (mauvais mot de passe, BDD non démarrée, etc.)
         console.error('ERREUR LORS DE LA CONNEXION À LA BASE DE DONNÉES :', err.stack);
-        // Vous pourriez vouloir arrêter l'application ici si la BDD est essentielle
-        // process.exit(1);
+
+        process.exit(1);
     } else {
         // Si la connexion réussit
         console.log('Connecté avec succès à la base de données PostgreSQL.');
-        // IMPORTANT : Il faut toujours libérer le client après l'avoir utilisé
+        // Il faut toujours libérer le client après l'avoir utilisé
         // pour qu'il retourne dans le pool et soit disponible pour d'autres requêtes.
         release();
     }

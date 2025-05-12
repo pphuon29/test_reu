@@ -1,5 +1,5 @@
 
--- Supprimer les tables si elles existent (pour réinitialisation facile)
+-- Supprimer les tables si elles existent 
 DROP TABLE IF EXISTS responses;
 DROP TABLE IF EXISTS meeting_slots;
 DROP TABLE IF EXISTS invitations; 
@@ -61,20 +61,21 @@ CREATE TABLE invitations (
 
 
 -- Données de démonstration 
--- Insérer un organisateur
+-- Insérer un organisateur 
+-- MDP généré avec le script generateHash, correspond à 123 pour les 2 utilisateurs (test)
 INSERT INTO users (email, password_hash, name, user_type) VALUES
-('organisateur@example.com', 'hash_bidon_a_remplacer', 'Alice Organisateur', 'organizer');
+('organisateur@exemple.com', '$2b$10$bxqki/JByMROnW1fKXA1nOZGKnmupyoVFRCWRyUWywZB6Gp6BH0ay', 'Alice Organisateur', 'organizer');
 
 -- Insérer un participant 
  INSERT INTO users (email, password_hash, name, user_type) VALUES
- ('participant1@example.com', 'hash_bidon_a_remplacer', 'Bob Participant', 'participant');
+ ('participant1@exemple.com', '$2b$10$bxqki/JByMROnW1fKXA1nOZGKnmupyoVFRCWRyUWywZB6Gp6BH0ay', 'Bob Participant', 'participant');
 
 -- Insérer une réunion créée par Alice
  INSERT INTO meetings (organizer_id, title, description) VALUES
- ((SELECT user_id FROM users WHERE email = 'organisateur@example.com'), 'Réunion Projet Alpha', 'Discussion du planning');
+ ((SELECT user_id FROM users WHERE email = 'organisateur@exemple.com'), 'Réunion Projet 1', 'Discussion du planning');
 
 -- Insérer des créneaux pour cette réunion
--- Attention: Récupérer le meeting_id réel après insertion
+-- Récupérer le meeting_id réel après insertion
  INSERT INTO meeting_slots (meeting_id, start_time, end_time) VALUES
  (1, '2025-05-10 10:00:00+02', '2025-05-10 11:00:00+02'),
  (1, '2025-05-10 14:00:00+02', '2025-05-10 15:00:00+02'),

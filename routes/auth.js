@@ -96,7 +96,7 @@ router.post('/login', async (req, res) => {
     // 1. Extraire email et mot de passe du formulaire
     const { email, password } = req.body;
 
-    // Vérification simple (optionnelle)
+    // Vérification simple 
     if (!email || !password) {
         return res.render('login', {
             pageTitle: 'Connexion',
@@ -111,7 +111,7 @@ router.post('/login', async (req, res) => {
 
         // 3. Vérifier si l'utilisateur existe
         if (!user) {
-            // !! Sécurité : Ne pas dire si c'est l'email ou le mot de passe qui est faux
+
             return res.render('login', {
                 pageTitle: 'Connexion',
                 error: 'Email ou mot de passe incorrect.',
@@ -132,7 +132,7 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // --- Connexion réussie ! ---
+        // --- Connexion réussie  ---
 
         // 6. Stocker les informations utilisateur dans la session
         // Ne stockez que ce qui est nécessaire et non sensible
@@ -141,7 +141,7 @@ router.post('/login', async (req, res) => {
             name: user.name,
             email: user.email,
             userType: user.user_type
-            // NE PAS stocker user.password_hash ici !
+
         };
 
         // 7. Rediriger vers la page d'accueil (ou un tableau de bord plus tard)
@@ -168,14 +168,11 @@ router.get('/logout', (req, res, next) => {
             return next(err); // Passe à un gestionnaire d'erreur Express si vous en avez un
         }
         // Optionnel: Effacer le cookie côté client (le nom du cookie est souvent 'connect.sid' par défaut avec express-session)
-        res.clearCookie('connect.sid'); // Ajustez le nom si vous l'avez changé dans la config session
+        res.clearCookie('connect.sid'); 
         // Rediriger vers la page d'accueil
         res.redirect('/');
     });
 });
-
-
-// TODO : --- Routes POST /login et GET /logout (à implémenter) ---
 
 
 module.exports = router;
