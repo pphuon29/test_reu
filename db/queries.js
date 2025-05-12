@@ -4,10 +4,10 @@
 const db = require('./index');
 
 /**
- * Recherche un utilisateur dans la base de données par son adresse email.
- * @param {string} email - L'adresse email à rechercher.
+ * Recherche un utilisateur dans la base de données par son adresse email
+ * @param {string} email - L'adresse email à rechercher
  * @returns {Promise<object|undefined>} Une promesse qui résout avec l'objet utilisateur
- * (s'il est trouvé) ou undefined (sinon).
+ * (s'il est trouvé) ou undefined (sinon)
  */
 async function findUserByEmail(email) {
     // Requête SQL paramétrée pour éviter les injections SQL
@@ -33,15 +33,15 @@ async function findUserByEmail(email) {
 /**
  * Crée un nouvel utilisateur dans la base de données.
  * @param {string} email - L'email du nouvel utilisateur.
- * @param {string} hashedPassword - Le mot de passe DEJA haché avec bcrypt.
- * @param {string} name - Le nom de l'utilisateur.
- * @param {string} userType - Le type ('organizer' ou 'participant').
+ * @param {string} hashedPassword - Le mot de passe DEJA haché avec bcrypt
+ * @param {string} name - Le nom de l'utilisateur
+ * @param {string} userType - Le type ('organizer' ou 'participant')
  * @returns {Promise<object>} Une promesse qui résout avec l'objet du nouvel utilisateur créé
- * (grâce à RETURNING *).
+ * (grâce à RETURNING *)
  */
 async function createUser(email, hashedPassword, name, userType) {
     // Utilisation de RETURNING * pour récupérer toutes les colonnes de la ligne insérée,
-    // y compris le user_id auto-généré par SERIAL PRIMARY KEY.
+    // y compris le user_id auto-généré par SERIAL PRIMARY KEY
     const sql = `
         INSERT INTO users (email, password_hash, name, user_type)
         VALUES ($1, $2, $3, $4)
@@ -60,15 +60,15 @@ async function createUser(email, hashedPassword, name, userType) {
 }
 
 /**
- * Recherche un utilisateur dans la base de données par son ID.
+ * Recherche un utilisateur dans la base de données par son ID
  * Sera utile pour récupérer les informations de l'utilisateur stocké dans la session.
- * @param {number} id - L'ID (user_id) de l'utilisateur.
+ * @param {number} id - L'ID (user_id) de l'utilisateur
  * @returns {Promise<object|undefined>} Une promesse qui résout avec l'objet utilisateur
  * (s'il est trouvé) ou undefined (sinon).
  */
 async function findUserById(id) {
     // Sélectionne toutes les colonnes SAUF le hash du mot de passe par sécurité,
-    // car on n'en a généralement pas besoin quand on récupère un utilisateur par ID
+    // car on n'a pas besoin quand on récupère un utilisateur par ID
     const sql = 'SELECT user_id, email, name, user_type, created_at FROM users WHERE user_id = $1';
     const params = [id];
 
@@ -84,11 +84,11 @@ async function findUserById(id) {
 // --- FONCTIONS POUR LES RÉUNIONS ---
 
 /**
- * Insère une nouvelle réunion dans la table 'meetings'.
- * @param {number} organizerId - L'ID de l'utilisateur qui crée la réunion.
- * @param {string} title - Le titre de la réunion.
+ * Insère une nouvelle réunion dans la table 'meetings'
+ * @param {number} organizerId - L'ID de l'utilisateur qui crée la réunion
+ * @param {string} title - Le titre de la réunion
  * @param {string|null} description - La description de la réunion (peut être vide/null).
- * @returns {Promise<object>} Une promesse qui résout avec l'objet de la réunion créée (incluant son meeting_id).
+ * @returns {Promise<object>} Une promesse qui résout avec l'objet de la réunion créée (incluant son meeting_id)
  */
 async function createMeeting(organizerId, title, description) {
     const sql = `
@@ -109,11 +109,11 @@ async function createMeeting(organizerId, title, description) {
 }
 
 /**
- * Insère un créneau horaire proposé pour une réunion dans la table 'meeting_slots'.
- * @param {number} meetingId - L'ID de la réunion à laquelle ce créneau appartient.
- * @param {string|Date} startTime - La date et l'heure de début du créneau.
- * @param {string|Date} endTime - La date et l'heure de fin du créneau. Mêmes contraintes de format.
- * @returns {Promise<object>} Une promesse qui résout avec l'objet du créneau créé.
+ * Insère un créneau horaire proposé pour une réunion dans la table 'meeting_slots'
+ * @param {number} meetingId - L'ID de la réunion à laquelle ce créneau appartient
+ * @param {string|Date} startTime - La date et l'heure de début du créneau
+ * @param {string|Date} endTime - La date et l'heure de fin du créneau. Mêmes contraintes de format
+ * @returns {Promise<object>} Une promesse qui résout avec l'objet du créneau créé
  */
 async function addMeetingSlot(meetingId, startTime, endTime) {
 
@@ -152,9 +152,9 @@ async function getMeetingById(meetingId) {
 }
 
 /**
- * Récupère tous les créneaux pour une réunion spécifique, triés par date de début.
- * @param {number} meetingId L'ID de la réunion.
- * @returns {Promise<Array<object>>} Un tableau des objets créneaux.
+ * Récupère tous les créneaux pour une réunion spécifique, triés par date de début
+ * @param {number} meetingId L'ID de la réunion
+ * @returns {Promise<Array<object>>} Un tableau des objets créneaux
  */
 async function getSlotsByMeetingId(meetingId) {
     const sql = 'SELECT * FROM meeting_slots WHERE meeting_id = $1 ORDER BY start_time ASC';
@@ -171,8 +171,8 @@ async function getSlotsByMeetingId(meetingId) {
 
 /**
  * Récupère toutes les réunions créées par un organisateur spécifique.
- * @param {number} organizerId L'ID de l'organisateur.
- * @returns {Promise<Array<object>>} Un tableau des objets réunion (limité aux infos utiles pour la liste).
+ * @param {number} organizerId L'ID de l'organisateur
+ * @returns {Promise<Array<object>>} Un tableau des objets réunion (limité aux infos utiles pour la liste)
  */
 async function getMeetingsByOrganizer(organizer_id){
 
@@ -191,9 +191,9 @@ async function getMeetingsByOrganizer(organizer_id){
 
 
 /**
- * Supprime une réunion et (via CASCADE) ses créneaux, réponses, invitations associés.
- * @param {number} meetingId L'ID de la réunion à supprimer.
- * @returns {Promise<number>} Le nombre de lignes supprimées dans la table meetings (devrait être 1 ou 0).
+ * Supprime une réunion et (via CASCADE) ses créneaux, réponses, invitations associés
+ * @param {number} meetingId L'ID de la réunion à supprimer
+ * @returns {Promise<number>} Le nombre de lignes supprimées dans la table meetings (devrait être 1 ou 0)
  */
 async function deleteMeetingById(meetingId) {
     const sql = 'DELETE FROM meetings WHERE meeting_id = $1';

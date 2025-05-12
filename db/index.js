@@ -3,10 +3,10 @@
 // Importe la classe Pool du module 'pg'
 const { Pool } = require('pg');
 
-// La configuration dotenv est normalement déjà faite dans app.js au démarrage.
+// La configuration dotenv est normalement déjà faite dans app.js au démarrage
 
-// Crée une nouvelle instance de Pool.
-// Le constructeur Pool prend un objet de configuration.
+// Crée une nouvelle instance de Pool
+// Le constructeur Pool prend un objet de configuration
 // Il va automatiquement chercher les variables d'environnement standard
 // (PGUSER, PGHOST, PGDATABASE, PGPASSWORD, PGPORT) si elles existent,
 // mais il est mieux de mapper depuis vos noms de variables .env
